@@ -1,2 +1,4 @@
 palindrome : String -> Bool
-palindrome str = str == reverse str
+palindrome str =
+  let str' = toLower str in
+  str' == reverse str'
