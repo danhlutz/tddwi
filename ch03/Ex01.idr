@@ -8,8 +8,10 @@ my_length (x :: xs) = S (my_length xs)
 
 -- 2
 my_reverse : List a -> List a
-my_reverse [] = []
-my_reverse (x :: xs) = (my_reverse xs) ++ [x]
+my_reverse xs = iter [] xs
+  where iter : List a -> List a -> List a
+        iter ans [] = ans
+        iter ans (y :: ys) = iter (y :: ans) ys
 
 -- 3
 my_map : (a -> b) -> List a -> List b
