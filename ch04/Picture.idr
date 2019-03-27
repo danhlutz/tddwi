@@ -48,8 +48,9 @@ pictureArea (Translate x y pic) = pictureArea pic
 data Biggest = NoTriangle | Size Double
 
 bigTriangleHelper : (shape : Shape) -> Biggest
-bigTriangleHelper (Triangle x y) = Size (0.5 * x * y)
-bigTriangleHelper _ = NoTriangle
+bigTriangleHelper shape = case shape of
+                               (Triangle _ _) => Size (area shape)
+                               _ => NoTriangle
 
 compareHelper : (big : Biggest) -> (big1 : Biggest) -> Biggest
 compareHelper NoTriangle big1 = big1
