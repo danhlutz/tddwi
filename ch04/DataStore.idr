@@ -22,6 +22,8 @@ addToStore (MkData size items) newitem = MkData _ (addToData items)
 
 data Command = Add String
              | Get Integer
+             | Size
+             | Search String
              | Quit
 
 parseCommand : (cmd : String) -> (args : String) -> Maybe Command
@@ -30,6 +32,8 @@ parseCommand "get" val = case all isDigit (unpack val) of
                               False => Nothing
                               True => Just (Get (cast val))
 parseCommand "quit" "" = Just Quit
+parseCommand "size" "" = Just Size
+parseCommand "search" str = Just (Search str)
 parseCommand _ _ = Nothing
 
 parse : (input : String) -> Maybe Command
@@ -44,6 +48,18 @@ getEntry pos store
              Nothing => Just ("ID out of range\n", store)
              (Just id) => Just (index id store_items ++ "\n", store)
 
+findSearchTerms : (store : DataStore) -> (term : String) -> String
+findSearchTerms store term
+  = let store_items = items store in
+    iter store_items 0 ""
+    where iter : Vect k String -> Integer -> String -> String
+          iter [] i ans = ans
+          iter (x :: xs) i ans
+            = case (isInfixOf term x) of
+                   True => (show i) ++ ": " ++ x ++ "\n"
+                           ++ (iter xs (i + 1) ans)
+                   False => iter xs (i + 1) ans
+
 processInput : DataStore -> String -> Maybe (String, DataStore)
 processInput store inp
   = case parse inp of
@@ -51,6 +67,8 @@ processInput store inp
          Just (Add item) =>
            Just ("ID " ++ show (size store) ++ "\n", addToStore store item)
          Just (Get pos) => getEntry pos store
+         Just Size => Just ("SIZE: " ++ show (size store) ++ "\n", store)
+         Just (Search term) => Just (findSearchTerms store term, store)
          Just Quit => Nothing
 
 main : IO ()
