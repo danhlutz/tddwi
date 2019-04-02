@@ -26,6 +26,12 @@ guess target guesses = do
          putStrLn "Your guess is too high!"
          guess target (S guesses)
 
+mkRandom : (l : Nat) -> (u: Nat) -> IO Nat
+mkRandom l u = do
+  let range = u - l
+  now <- time
+  pure ((mod (cast now) range) + l)
+
 main : IO ()
 main = do
   cTime <- time
