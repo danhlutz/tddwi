@@ -16,6 +16,7 @@ readToBlank = do
 
 concatToString : List String -> String
 concatToString [] = ""
+concatToString (x :: []) = x
 concatToString (x :: xs) = x ++ "\n" ++ concatToString xs
 
 readAndSave : IO ()
