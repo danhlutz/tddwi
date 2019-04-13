@@ -34,3 +34,7 @@ Ord Album where
                  EQ => compare title title'
                  diff_year => diff_year
            diff_artist => diff_artist
+
+Show Album where
+  show (MkAlbum artist title year)
+    = title ++ " by " ++ artist ++ " (released " ++ show year ++ ")"
