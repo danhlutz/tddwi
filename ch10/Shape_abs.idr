@@ -1,4 +1,4 @@
-module Shape
+module Shape_abs
 
 export
 data Shape = Triangle Double Double
@@ -16,3 +16,15 @@ rectangle = Rectangle
 export
 circle : Double -> Shape
 circle = Circle
+
+public export
+data ShapeView : Shape -> Type where
+     STriangle : ShapeView (triangle base width)
+     SRectangle : ShapeView (rectangle width height)
+     SCircle : ShapeView (circle radius)
+
+public export
+shapeView : (s : Shape) -> ShapeView s
+shapeView (Triangle x y) = STriangle
+shapeView (Rectangle x y) = SRectangle
+shapeView (Circle x) = SCircle
