@@ -3,15 +3,22 @@ data InfIO : Type where
           -> (a -> Inf InfIO)
           -> InfIO
 
-loopPrint : String -> InfIO
-loopPrint msg = Do (putStrLn msg)
-                   (\_ => loopPrint msg)
+(>>=) : IO a -> (a -> Inf InfIO) -> InfIO
+(>>=) = Do
 
-data Fuel = Dry | More Fuel
+loopPrint : String -> InfIO
+loopPrint msg = do
+          putStrLn msg
+          loopPrint msg
+
+data Fuel = Dry | More (Lazy Fuel)
 
 tank : Nat -> Fuel
 tank Z = Dry
 tank (S k) = More (tank k)
+
+forever : Fuel
+forever = More forever
 
 run : Fuel -> InfIO -> IO ()
 run (More fuel) (Do c f) = do res <- c
