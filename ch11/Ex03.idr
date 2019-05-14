@@ -61,21 +61,32 @@ Show Score where
   show (Score' k j) = show k ++ " / " ++ show j
   showPrec d x = show x
 
+data ScoreZ : Nat -> Nat -> Type where
+     Empty : ScoreZ Z Z
+     Won   : ScoreZ k j -> ScoreZ (S k) (S j)
+     Lost  : ScoreZ k j -> ScoreZ k (S j)
+
+Show (ScoreZ a b) where
+  show {a} {b} x = show a ++ " / " ++ show b
+  showPrec d x = show x
+
 emptyScore : Score
 emptyScore = Score' Z Z
 
 mutual
-  correct : Stream Int -> (score : Score) -> ConsoleIO Score
-  correct nums (Score' k j)= do
+  correct : Stream Int -> (score : ScoreZ k j) ->
+            ConsoleIO (ScoreZ (S k) (S j))
+  correct nums score = do
     PutStr "Correct!\n"
-    quiz nums (Score' (S k) (S j))
+    quiz nums (Won score)
 
-  wrong : Stream Int -> Int -> (score : Score) -> ConsoleIO Score
-  wrong nums ans (Score' k j) = do
+  wrong : Stream Int -> Int -> (score : ScoreZ k j) ->
+          ConsoleIO (ScoreZ k (S j))
+  wrong nums ans score = do
     PutStr ("Wrong, the answer is " ++ show ans ++ "\n")
-    quiz nums (Score' k (S j))
+    quiz nums (Lost score)
 
-  quiz : Stream Int -> (score : Score) -> ConsoleIO Score
+  quiz : Stream Int -> (score : (Score k j)) -> ConsoleIO (Score x y)
   quiz (num1 :: num2 :: nums) score = do
     PutStr ("Score so far: " ++ show score ++ "\n")
     input <- readInput (show num1 ++ " * " ++ show num2 ++ "? ")
